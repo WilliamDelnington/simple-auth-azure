@@ -36,6 +36,7 @@ ALLOWED_HOSTS = [
 
 CORS_ALLOWED_ORIGINS = [
     "https://localhost:3000",
+    "https://purple-ground-060d2281e.1.azurestaticapps.net"
 ]
 
 
