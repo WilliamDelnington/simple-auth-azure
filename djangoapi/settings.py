@@ -33,7 +33,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "simpleauth-e5cnh0cfcxfcdbd0.canadacentral-01.azurewebsites.net",
     "169.254.131.2",
-    "169.254.131.3"
+    "169.254.131.3",
+    "127.0.0.1"
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -186,3 +187,34 @@ CURRENT_FRONTEND_URL = "http://localhost:3000"
 AUTHENTICATION_BACKENDS = [
     'mydjangoapi.backend.EmailOrPhoneBackend',
 ]
+
+import logging
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django.server': {  # This logger handles runserver-style request logs
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
