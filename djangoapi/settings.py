@@ -183,6 +183,7 @@ AUTH_USER_MODEL = 'mydjangoapi.User'
 PASSWORD_RESET_TIMEOUT = 1800
 
 CURRENT_FRONTEND_URL = "https://purple-ground-060d2281e.1.azurestaticapps.net"
+# CURRENT_FRONTEND_URL = "http://localhost:3000"
 
 AUTHENTICATION_BACKENDS = [
     'mydjangoapi.backend.EmailOrPhoneBackend',
