@@ -42,7 +42,7 @@ class SignUpAPIView(APIView):
                     'address': user.address,
                     'location': user.location
                 },
-                "tokens": tokens
+                "tokens": tokens["access"]
             }, status=status.HTTP_201_CREATED)
             # Set HttpOnly cookies
             # response.set_cookie(
@@ -53,16 +53,16 @@ class SignUpAPIView(APIView):
             #     samesite='Lax',
             #     max_age=15 * 60  # 15 minutes, matching ACCESS_TOKEN_LIFETIME
             # )
-            # response.set_cookie(
-            #     key='refresh_token',
-            #     value=tokens['refresh'],
-            #     httponly=True,
-            #     secure=True,
-            #     samesite='Lax',
-            #     max_age=7 * 24 * 60 * 60  # 7 days, matching REFRESH_TOKEN_LIFETIME
-            # )
+            response.set_cookie(
+                key='refresh_token',
+                value=tokens['refresh'],
+                httponly=True,
+                secure=True,
+                samesite='Lax',
+                max_age=7 * 24 * 60 * 60  # 7 days, matching REFRESH_TOKEN_LIFETIME
+            )
             return response
-        print("Serializer not valid: ", serializer.errors)
+        print("SignUpSerializer not valid: ", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class SignInAPIView(APIView):
@@ -73,9 +73,9 @@ class SignInAPIView(APIView):
         if serializer.is_valid():
             user = serializer.validated_data['user']
             tokens = serializer.get_tokens(user)
-            return Response({
+            response = Response({
                 'message': 'Login successful',
-                'tokens': tokens,
+                'tokens': tokens["access"],
                 'user': {
                     'id': user.id,
                     'email': user.email,
@@ -86,7 +86,16 @@ class SignInAPIView(APIView):
                     'location': user.location
                 }
             }, status=status.HTTP_200_OK)
-        print(serializer.errors)
+            response.set_cookie(
+                key='refresh_token',
+                value=tokens['refresh'],
+                httponly=True,
+                secure=True,
+                samesite='Lax',
+                max_age=7 * 24 * 60 * 60  # 7 days, matching REFRESH_TOKEN_LIFETIME
+            )
+            return response     
+        print("SignInSerializer not valid: ", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class UpdateProfileAPIView(APIView):
@@ -127,6 +136,7 @@ class UpdateProfileAPIView(APIView):
                     'location': user.location
                 }
             }, status=status.HTTP_200_OK)
+        print("UpdateProfileSerializer not valid: ", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class UpdatePasswordAPIView(APIView):
@@ -144,7 +154,7 @@ class UpdatePasswordAPIView(APIView):
                 'message': 'Password updated successfully',
                 'tokens': new_token
             }, status=status.HTTP_200_OK)
-        print(serializer.errors)
+        print("UpdatePasswordSerializer not valid: ", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ForgotPasswordAPIView(APIView):
@@ -153,6 +163,7 @@ class ForgotPasswordAPIView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response({'message': 'Password reset email sent successfully.'}, status=status.HTTP_200_OK)
+        print("ForgotPasswordSerializer not valid: ", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ResetPasswordAPIView(APIView):
@@ -169,14 +180,19 @@ class ResetPasswordAPIView(APIView):
                 'message': 'Password reset successfully.',
                 'tokens': tokens
             }, status=status.HTTP_200_OK)
-        print(serializer.errors)
+        print("ResetPasswordSerializer not valid: ", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
-        print(request.data)
+        if 'refresh' not in request.data:
+            refresh_cookie = request.COOKIES.get('refresh_token')
+            if not refresh_cookie:
+                return Response({'message': 'Refresh token not found.'}, status=status.HTTP_401_UNAUTHORIZED)
+            request.data['refresh'] = refresh_cookie
+        # print(request.data)
         response = super().post(request, *args, **kwargs)
-        print(response)
+        # print(response)
         if response.status_code == status.HTTP_200_OK:
             response.set_cookie(
                 key="access_token",
