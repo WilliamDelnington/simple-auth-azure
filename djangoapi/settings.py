@@ -36,7 +36,6 @@ ALLOWED_HOSTS = [
 
 CORS_ALLOWED_ORIGINS = [
     "https://localhost:3000",
-    "https://simpleauth-e5cnh0cfcxfcdbd0.scm.canadacentral-01.azurewebsites.net/"
 ]
 
 
@@ -90,9 +89,20 @@ WSGI_APPLICATION = 'djangoapi.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("POSTGRESQL_DATABASE"),
+        'USER': os.getenv("POSTGRESQL_USERNAME") + "@" + os.getenv("POSTGRESQL_SERVERNAME"),
+        'PASSWORD': os.getenv("POSTGRESQL_PASSWORD"),
+        'HOST': os.getenv("POSTGRESQL_HOST"),
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+        }
     }
 }
 
