@@ -32,7 +32,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "simpleauth-e5cnh0cfcxfcdbd0.canadacentral-01.azurewebsites.net",
-    "169.254.131.2"
+    "169.254.131.2",
+    "169.254.131.3"
 ]
 
 CORS_ALLOWED_ORIGINS = [
