@@ -160,6 +160,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
     def validate_email(self, value):
+        print("Validating email...")
         # Don't reveal if the user exists
         self.user = User.objects.filter(email=value).first()
         return value
@@ -167,6 +168,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
     def save(self):
         if not self.user:
             return
+        print("Validate complete.")
         token_generator = PasswordResetTokenGenerator()
         token = token_generator.make_token(self.user)
         uid = urlsafe_base64_encode(str(self.user.id).encode())
