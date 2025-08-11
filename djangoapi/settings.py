@@ -31,13 +31,13 @@ SECRET_KEY = 'django-insecure-*d4o(c++2eotgm&myx-0e1f8e&wa#%!vq7$yny6m0$ec=2o3o0
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "simpleauth-e5cnh0cfcxfcdbd0.canadacentral-01.azurewebsites.net",
+    "https://simpleauth-e5cnh0cfcxfcdbd0.canadacentral-01.azurewebsites.net",
     "http://localhost:3000"
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "simpleauth-e5cnh0cfcxfcdbd0.canadacentral-01.azurewebsites.net"
+    "https://simpleauth-e5cnh0cfcxfcdbd0.canadacentral-01.azurewebsites.net"
 ]
 
 
