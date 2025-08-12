@@ -168,6 +168,8 @@ class ForgotPasswordAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ResetPasswordAPIView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         mapped_data = {
             "uid": request.data.get("uid"),
