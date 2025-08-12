@@ -28,7 +28,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-*d4o(c++2eotgm&myx-0e1f8e&wa#%!vq7$yny6m0$ec=2o3o0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ENVIRONMENT = os.getenv("APP_MODE", "development")
+
+if ENVIRONMENT == "development":
+    DEBUG = True
+    CURRENT_FRONTEND_URL = "http://localhost:3000"
+else:
+    DEBUG = False
+    CURRENT_FRONTEND_URL = "https://purple-ground-060d2281e.1.azurestaticapps.net"
 
 ALLOWED_HOSTS = [
     "simpleauth-e5cnh0cfcxfcdbd0.canadacentral-01.azurewebsites.net",
@@ -181,9 +188,6 @@ AUTH_USER_MODEL = 'mydjangoapi.User'
 
 # 30 minutes in seconds
 PASSWORD_RESET_TIMEOUT = 1800
-
-CURRENT_FRONTEND_URL = "https://purple-ground-060d2281e.1.azurestaticapps.net"
-# CURRENT_FRONTEND_URL = "http://localhost:3000"
 
 AUTHENTICATION_BACKENDS = [
     'mydjangoapi.backend.EmailOrPhoneBackend',
