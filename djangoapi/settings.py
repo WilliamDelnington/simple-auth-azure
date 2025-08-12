@@ -30,31 +30,31 @@ SECRET_KEY = 'django-insecure-*d4o(c++2eotgm&myx-0e1f8e&wa#%!vq7$yny6m0$ec=2o3o0
 # SECURITY WARNING: don't run with debug turned on in production!
 ENVIRONMENT = os.getenv("APP_MODE", "development")
 
-if ENVIRONMENT == "development":
-    DEBUG = True
-    CURRENT_FRONTEND_URL = "http://localhost:3000"
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+# if ENVIRONMENT == "development":
+#     DEBUG = True
+#     CURRENT_FRONTEND_URL = "http://localhost:3000"
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': BASE_DIR / 'db.sqlite3',
+#         }
+#     }
+# else:
+DEBUG = False
+CURRENT_FRONTEND_URL = "https://purple-ground-060d2281e.1.azurestaticapps.net"
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("POSTGRESQL_DATABASE"),
+        'USER': os.getenv("POSTGRESQL_USERNAME"),
+        'PASSWORD': os.getenv("POSTGRESQL_PASSWORD"),
+        'HOST': os.getenv("POSTGRESQL_HOST"),
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
         }
     }
-else:
-    DEBUG = False
-    CURRENT_FRONTEND_URL = "https://purple-ground-060d2281e.1.azurestaticapps.net"
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv("POSTGRESQL_DATABASE"),
-            'USER': os.getenv("POSTGRESQL_USERNAME"),
-            'PASSWORD': os.getenv("POSTGRESQL_PASSWORD"),
-            'HOST': os.getenv("POSTGRESQL_HOST"),
-            'PORT': '5432',
-            'OPTIONS': {
-                'sslmode': 'require',
-            }
-        }
-    }
+}
 
 ALLOWED_HOSTS = [
     "simpleauth-e5cnh0cfcxfcdbd0.canadacentral-01.azurewebsites.net",
