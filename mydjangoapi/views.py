@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from .serializer import *
 from .models import User
+import os
 
 # Create your views here.
 class UserListView(ListView):
@@ -57,8 +58,10 @@ class SignUpAPIView(APIView):
                 key='refresh_token',
                 value=tokens['refresh'],
                 httponly=True,
+                # secure=False if os.getenv("APP_MODE", "development") == "development" else True,
+                # samesite='None' if os.getenv("APP_MODE", "development") == "development" else 'Lax',
                 secure=True,
-                samesite='Lax',
+                samesite='None',
                 max_age=7 * 24 * 60 * 60  # 7 days, matching REFRESH_TOKEN_LIFETIME
             )
             return response
@@ -86,12 +89,15 @@ class SignInAPIView(APIView):
                     'location': user.location
                 }
             }, status=status.HTTP_200_OK)
+            print("Mode: ", os.getenv("APP_MODE", "development"))
             response.set_cookie(
                 key='refresh_token',
                 value=tokens['refresh'],
                 httponly=True,
+                # secure=False if os.getenv("APP_MODE", "development") == "development" else True,
+                # samesite='None' if os.getenv("APP_MODE", "development") == "development" else 'Lax',
                 secure=True,
-                samesite='Lax',
+                samesite='None',
                 max_age=7 * 24 * 60 * 60  # 7 days, matching REFRESH_TOKEN_LIFETIME
             )
             return response     
@@ -188,6 +194,9 @@ class ResetPasswordAPIView(APIView):
     
 class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
+        refresh_cookie = request.COOKIES.get('refresh_token')
+        print("Refresh token from cookie:", refresh_cookie)
+        print("Request data before:", request.data)
         if 'refresh' not in request.data:
             refresh_cookie = request.COOKIES.get('refresh_token')
             if not refresh_cookie:
@@ -197,21 +206,25 @@ class CustomTokenRefreshView(TokenRefreshView):
         response = super().post(request, *args, **kwargs)
         # print(response)
         if response.status_code == status.HTTP_200_OK:
+            access = response.data["access"]
             response.set_cookie(
                 key="access_token",
-                value=response.data["access"],
+                value=access,
                 httponly=True,
+                # secure=False if os.getenv("APP_MODE", "development") == "development" else True,
+                # samesite='None' if os.getenv("APP_MODE", "development") == "development" else 'Lax',
                 secure=True,
-                samesite='Lax',
+                samesite='None',
                 max_age=15 * 60
             )
-            if 'refresh' in response.data:
-                response.set_cookie(
-                    key="refresh_token",
-                    value=response.data["refresh"],
-                    httponly=True,
-                    secure=True,
-                    samesite='Lax',
-                    max_age=21 * 24 * 60 * 60
-                )
+            # if 'refresh' in response.data:
+            #     response.set_cookie(
+            #         key="refresh_token",
+            #         value=response.data["refresh"],
+            #         httponly=True,
+            #         secure=True,
+            #         samesite='Lax',
+            #         max_age=21 * 24 * 60 * 60
+            #     )
+            response.data["access"] = access
         return response

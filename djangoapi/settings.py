@@ -33,9 +33,28 @@ ENVIRONMENT = os.getenv("APP_MODE", "development")
 if ENVIRONMENT == "development":
     DEBUG = True
     CURRENT_FRONTEND_URL = "http://localhost:3000"
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 else:
     DEBUG = False
     CURRENT_FRONTEND_URL = "https://purple-ground-060d2281e.1.azurestaticapps.net"
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv("POSTGRESQL_DATABASE"),
+            'USER': os.getenv("POSTGRESQL_USERNAME"),
+            'PASSWORD': os.getenv("POSTGRESQL_PASSWORD"),
+            'HOST': os.getenv("POSTGRESQL_HOST"),
+            'PORT': '5432',
+            'OPTIONS': {
+                'sslmode': 'require',
+            }
+        }
+    }
 
 ALLOWED_HOSTS = [
     "simpleauth-e5cnh0cfcxfcdbd0.canadacentral-01.azurewebsites.net",
@@ -44,11 +63,22 @@ ALLOWED_HOSTS = [
     "127.0.0.1"
 ]
 
+CORS_ALLOW_CREDENTIALS = True  # <- This is key
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://purple-ground-060d2281e.1.azurestaticapps.net"
 ]
 
+# SESSION_COOKIE_SAMESITE = 'None' if ENVIRONMENT == "development" else "Lax"
+# SESSION_COOKIE_SECURE = ENVIRONMENT == "production"
+# CSRF_COOKIE_SAMESITE = 'None' if ENVIRONMENT == "development" else "Lax"
+# CSRF_COOKIE_SECURE = ENVIRONMENT == "production"
+
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
 
 # Application definition
 
@@ -99,23 +129,26 @@ WSGI_APPLICATION = 'djangoapi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("POSTGRESQL_DATABASE"),
-        'USER': os.getenv("POSTGRESQL_USERNAME"),
-        'PASSWORD': os.getenv("POSTGRESQL_PASSWORD"),
-        'HOST': os.getenv("POSTGRESQL_HOST"),
-        'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',
-        }
-    }
-}
+# DATABASES = {
+#     # 'default': {
+#     #     'ENGINE': 'django.db.backends.sqlite3',
+#     #     'NAME': BASE_DIR / 'db.sqlite3',
+#     # }
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv("POSTGRESQL_DATABASE"),
+#         'USER': os.getenv("POSTGRESQL_USERNAME"),
+#         'PASSWORD': os.getenv("POSTGRESQL_PASSWORD"),
+#         'HOST': os.getenv("POSTGRESQL_HOST"),
+#         'PORT': '5432',
+#         'OPTIONS': {
+#             'sslmode': 'require',
+#         }
+#     } if ENVIRONMENT == "development" else {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
